@@ -14,8 +14,12 @@ class MagicBallBloc extends Bloc<MagicBallEvent, MagicBallState> {
 
   _doLoad(MagicBallLoadinglEvent event, Emitter emit) async {
     final dio = Dio();
-    final response = await dio.get('https://www.eightballapi.com/api');
-    emit(MagicBallAnswerState(response.data['reading']));
+    try{
+      final response = await dio.get('https://www.eightballapi.com/api');
+      emit(MagicBallAnswerState(response.data['reading']));
+    }catch(e){
+      emit(MagicBallErrorState());
+    }
 
   }
   _trowError(MagicBallErrorEvent event, Emitter emit) {

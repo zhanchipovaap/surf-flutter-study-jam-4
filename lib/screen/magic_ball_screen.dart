@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shake/shake.dart';
 
 import '../bloc/bloc/magic_ball_bloc.dart';
 
@@ -8,6 +9,16 @@ class MagicBallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ShakeDetector detector = ShakeDetector.autoStart(
+      onPhoneShake: () {
+        context.read<MagicBallBloc>().add(MagicBallLoadinglEvent());
+      },
+      minimumShakeCount: 1,
+      shakeSlopTimeMS: 500,
+      shakeCountResetTime: 3000,
+      shakeThresholdGravity: 2.7,
+    );
+
     return Material(
       type: MaterialType.transparency,
       child: BlocBuilder<MagicBallBloc, MagicBallState>(
@@ -95,12 +106,17 @@ class MagicBallScreen extends StatelessWidget {
                     )),
               ],
             );
-          } else {
+          }
+          if (state is MagicBallErrorState) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context
+                          .read<MagicBallBloc>()
+                          .add(MagicBallLoadinglEvent());
+                    },
                     icon: Image.asset(
                       "assets/images/error_ball.png",
                       width: 319,
@@ -118,6 +134,8 @@ class MagicBallScreen extends StatelessWidget {
                     )),
               ],
             );
+          } else {
+            return Container();
           }
         },
       ),
